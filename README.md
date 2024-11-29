@@ -2,65 +2,105 @@
 This project is a Java-based client-server application designed for monitoring stock prices
 
 
-Features
+## Features
 
-  1. Stock Price Updates using random numbers:
-    - The server generates random stock price fluctuations every 5 seconds.
-    - Clients are notified of changes for the stock symbols they are monitoring.
+- **Real-Time Stock Price Updates**:
+  - The server generates random price changes for stocks every 5 seconds.
+  - Clients receive updates for the stock symbols they monitor.
 
-  2. Client Commands:
-    - ADD <symbol>: Subscribe to a stock symbol.
-    - DEL <symbol>: Unsubscribe from a stock symbol.
-    - QUIT: Disconnect from the server.
+- **Client Commands**:
+  - `ADD <symbol>`: Subscribe to updates for a specific stock symbol.
+  - `DEL <symbol>`: Unsubscribe from updates for a specific stock symbol.
+  - `QUIT`: Disconnect from the server.
 
-  3. Server Notifications:
-    - Updates include the new stock price, absolute change, and percentage change.
-    - Example: AAPL 102.50 +2.50(2.50%).
+- **Server Notifications**:
+  - Includes the updated stock price, absolute change, and percentage change.
+  - Example: `AAPL 102.50 +2.50(2.50%)`.
 
-  4. Concurrency:
-    - Supports multiple clients simultaneously, each with an independent monitoring list.
+- **Concurrent Connections**:
+  - Supports multiple clients, each maintaining their own monitoring list.
 
+---
 
-Architecture
+## Architecture
 
-  1. Server:
-    - Listens for client connections on port 12345.
-    - Maintains a shared map of stock symbols and prices, along with client subscriptions.
-    - Sends price updates only to clients monitoring affected symbols.
+1. **Server**:
+   - Listens on port `12345` for client connections.
+   - Maintains:
+     - A map of stock symbols and their current prices.
+     - A list of clients and their monitored stock symbols.
+   - Notifies relevant clients when stock prices change.
 
-  2. Client:
-    - Sends commands to the server.
-    - Listens for server responses, including price updates and command confirmations.
+2. **Client**:
+   - Sends commands to the server.
+   - Receives notifications about price updates and command responses.
 
-  3. Handler:
-    - A dedicated thread for each client connection.
-    - Manages client-specific monitoring lists and communication.
+3. **Handler**:
+   - A dedicated thread for each connected client.
+   - Manages client-specific actions, such as adding or removing stock symbols.
 
+---
 
-Protocol
+## Protocol
 
-  1. Client to Server:
-    - Commands are structured as <COMMAND> [ARGUMENT].
-    - Examples:
-      ADD AAPL – Start monitoring AAPL.
-      DEL AAPL – Stop monitoring AAPL.
-      QUIT – Close the connection.
+### 1. Messages from Client to Server
 
-  2. Server to Client:
-    - Notifications and confirmations.
-    - Examples:
-      Added AAPL
-      Removed AAPL
-      AAPL 102.50 +2.50(2.50%)
+- **Format**: `<COMMAND> [ARGUMENT]`
+- **Commands**:
+  - `ADD <symbol>`: Subscribe to updates for a stock symbol.
+  - `DEL <symbol>`: Unsubscribe from updates for a stock symbol.
+  - `QUIT`: Disconnect from the server.
 
+- **Examples**:
+  - `ADD AAPL`
+  - `DEL GOOGL`
+  - `QUIT`
 
-How to Run
+### 2. Messages from Server to Client
 
-  1. Compile and run the server (Server.java).
-  2. Start one or more clients (Client.java).
-  3. Use client commands to interact with the server.
+- **Types of Responses**:
+  - Confirmations for commands:
+    - Example: `Added AAPL`, `Removed GOOGL`
+  - Price update notifications:
+    - Example: `AAPL 102.50 +2.50(2.50%)`
+  - Error messages for invalid commands:
+    - Example: `Invalid command.`
 
-This application showcases basic client-server communication and threading in Java, making it a good foundation for understanding distributed systems.
+---
+
+## How to Run
+
+1. **Server**:
+   - Compile and run the server:
+     ```bash
+     javac Server.java
+     java Server
+     ```
+
+2. **Client**:
+   - Compile and run the client:
+     ```bash
+     javac Client.java
+     java Client
+     ```
+
+3. **Interaction**:
+   - Use the following commands in the client terminal:
+     - `ADD <symbol>`: Add a stock symbol to monitor.
+     - `DEL <symbol>`: Remove a stock symbol from monitoring.
+     - `QUIT`: Exit the client.
+
+---
+
+## Example Interaction
+
+1. Client sends: `ADD AAPL`
+2. Server responds: `Added AAPL`
+3. Server sends price update: `AAPL 102.50 +2.50(2.50%)`
+4. Client sends: `DEL AAPL`
+5. Server responds: `Removed AAPL`
+6. Client sends: `QUIT`
+7. Server closes the connection.
 
 
 
